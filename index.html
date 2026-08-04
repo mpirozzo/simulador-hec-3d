@@ -95,6 +95,47 @@
   @keyframes niCyan  { 0%{ color:#22d3ee; text-shadow:0 0 10px rgba(34,211,238,.9);} 100%{ color:#e2e8f0; text-shadow:none;} }
   .flash-amber{ animation:niAmber .75s ease-out; }
   .flash-cyan { animation:niCyan  .75s ease-out; }
+
+  /* ---- Guía (panel educativo) ---- */
+  .guia-btn{ display:inline-flex; align-items:center; gap:7px; margin-top:11px; padding:8px 15px; border-radius:8px;
+    background:rgba(34,211,238,.10); border:1px solid rgba(34,211,238,.45); color:#67e8f9;
+    font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; transition:background .15s; }
+  .guia-btn:hover{ background:rgba(34,211,238,.18); }
+  .guia-btn svg{ width:14px; height:14px; }
+  .guia-overlay{ position:fixed; inset:0; z-index:60; display:none; align-items:flex-start; justify-content:center;
+    background:rgba(3,6,10,.80); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); padding:22px 14px; overflow-y:auto; }
+  .guia-overlay.open{ display:flex; }
+  .guia-modal{ width:100%; max-width:760px; margin:auto; background:#0b1017; border:1px solid var(--line2);
+    border-radius:14px; box-shadow:0 30px 80px rgba(0,0,0,.6); overflow:hidden; }
+  .guia-top{ position:sticky; top:0; z-index:2; display:flex; align-items:center; justify-content:space-between;
+    padding:14px 20px; background:#0b1017; border-bottom:1px solid var(--line); }
+  .guia-top .gt{ font-family:var(--mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:#67e8f9; }
+  .guia-close{ display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:8px;
+    background:#1e293b; border:1px solid #334155; color:var(--s200); font-size:19px; line-height:1; cursor:pointer; }
+  .guia-close:hover{ background:#243043; }
+  .guia-hint{ font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; color:var(--s600); text-transform:uppercase; }
+  .guia-body{ padding:6px 22px 30px; }
+  .acc{ border-bottom:1px solid var(--line); }
+  .acc-h{ width:100%; text-align:left; display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:15px 2px; background:none; border:none; cursor:pointer;
+    font-family:var(--serif); font-size:18px; font-weight:bold; color:var(--s100); }
+  .acc-h:hover{ color:#22d3ee; }
+  .acc-h .chev{ flex:0 0 auto; color:var(--s500); font-size:13px; transition:transform .2s; }
+  .acc.open .acc-h .chev{ transform:rotate(90deg); }
+  .acc-c{ display:none; padding:0 2px 18px; font-family:var(--serif); font-size:15.5px; line-height:1.62; color:var(--s300); }
+  .acc.open .acc-c{ display:block; }
+  .acc-c p{ margin:0 0 12px; }
+  .acc-c ul{ margin:0 0 12px; padding-left:20px; }
+  .acc-c li{ margin-bottom:8px; }
+  .acc-c h3{ font-family:var(--serif); font-size:16.5px; color:var(--s100); margin:18px 0 8px; }
+  .acc-c strong{ color:var(--s100); }
+  .acc-c em{ color:var(--s400); }
+  .acc-c a{ color:#22d3ee; text-decoration:none; word-break:break-word; }
+  .acc-c a:hover{ text-decoration:underline; }
+  .acc-c .fx{ display:block; font-family:var(--mono); font-size:13px; color:var(--s300); background:rgba(2,6,12,.6);
+    border-left:2px solid var(--line2); border-radius:4px; padding:9px 12px; margin:8px 0 14px; overflow-x:auto; white-space:nowrap; }
+  .acc-c .disc{ font-family:var(--mono); font-size:11px; color:var(--s600); }
+  @media(max-width:560px){ .guia-body{ padding:6px 16px 24px; } .acc-h{ font-size:16px; } .acc-c{ font-size:15px; } .guia-hint{ display:none; } }
 </style>
 </head>
 <body>
@@ -105,6 +146,10 @@
       <a class="label cred" href="https://www.instagram.com/dr.pirozzo_neurocirujano/" target="_blank" rel="noopener noreferrer" style="display:inline-block; color:#64748b; margin-top:3px;">dr.pirozzo_neurocirujano</a>
       <h1 class="title">Simulador de trauma craneal</h1>
       <p class="sub">HIC, BrIC y cizallamiento en una cabeza 3D translúcida.</p>
+      <button id="guiaBtn" class="guia-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Guía
+      </button>
     </header>
 
     <div class="fcard">
@@ -204,6 +249,133 @@
   </div>
 </div>
 
+<div id="guiaOverlay" class="guia-overlay" aria-hidden="true">
+  <div class="guia-modal" role="dialog" aria-modal="true" aria-label="Guía del simulador">
+    <div class="guia-top">
+      <span class="gt">Guía</span>
+      <span class="guia-hint">tocá un título para plegar · Esc o ✕ para cerrar</span>
+      <button id="guiaClose" class="guia-close" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="guia-body">
+
+      <section class="acc open"><button class="acc-h" type="button">¿Qué hace? <span class="chev">▶</span></button><div class="acc-c">
+        <p>Recrea de forma interactiva la biomecánica del trauma craneoencefálico. Sobre una cabeza humana 3D con el encéfalo en su posición anatómica, permite variar dos tipos de carga y ver en tiempo real cómo el cerebro se deforma y dónde aparecen las lesiones:</p>
+        <ul>
+          <li><strong>Impacto lineal (HIC)</strong> → lesiones <strong>focales</strong>: contusión por golpe y contragolpe (<em>coup–contrecoup</em>).</li>
+          <li><strong>Cinemática rotacional (BrIC)</strong> → lesión <strong>difusa</strong>: el cizallamiento de la sustancia blanca que produce la lesión axonal difusa (LAD).</li>
+        </ul>
+        <p>Los deslizadores modifican la aceleración, la duración del impacto y las velocidades angulares en los tres ejes; la malla muestra el estrés de corte, los vectores de cizallamiento, los focos de LAD y las contusiones de golpe/contragolpe. Es una herramienta pensada para enseñar: hace visibles los mecanismos, las direcciones y los umbrales del trauma.</p>
+      </div></section>
+
+      <section class="acc open"><button class="acc-h" type="button">Historia de las fórmulas <span class="chev">▶</span></button><div class="acc-c">
+        <h3>HIC — <em>Head Injury Criterion</em> (impacto lineal)</h3>
+        <p>El HIC condensa en un número la lesión por <strong>aceleración lineal</strong> de la cabeza. Su linaje:</p>
+        <ul>
+          <li><strong>Curva de tolerancia de Wayne State</strong> (Gurdjian, Lissner y Patrick; 1940–1960): relaciona la magnitud de la aceleración con su duración, a partir de estudios en cadáveres, animales y voluntarios.</li>
+          <li><strong>Índice de Severidad de Gadd</strong> (1966): introduce el exponente <strong>2.5</strong> que sigue vivo en el HIC.</li>
+          <li><strong>Versace (1971)</strong>: lo reformula como el promedio de aceleración en el intervalo crítico; la <strong>NHTSA</strong> lo adopta como HIC en la norma <strong>FMVSS 208</strong>.</li>
+          <li>Umbrales: <strong>HIC₁₅ ≤ 700</strong> y <strong>HIC₃₆ ≤ 1000</strong>. Según las curvas de <strong>Prasad–Mertz</strong>, un HIC de 1000 ≈ <strong>18 %</strong> de probabilidad de lesión grave (AIS ≥ 4) — y ~55 % de lesión seria (AIS ≥ 3).</li>
+        </ul>
+        <p>Su límite conceptual: solo mide aceleración lineal, así que describe bien el golpe focal pero ignora la rotación.</p>
+        <span class="fx">HIC = máx [ (t₂ − t₁) · ( 1/(t₂ − t₁) · ∫ a(t) dt )^2.5 ]</span>
+        <h3>BrIC — <em>Brain Injury Criterion</em> (rotación)</h3>
+        <p>Desarrollado por <strong>Takhounts y col. (NHTSA, 2011–2013)</strong> para capturar lo que el HIC no ve: la <strong>cinemática rotacional</strong>, principal motor de la LAD. Usa las <strong>velocidades angulares pico</strong> en los tres ejes, normalizadas por valores críticos:</p>
+        <ul>
+          <li>ω<sub>x</sub> crítico = <strong>66.25 rad/s</strong> — plano coronal (“oreja–hombro”)</li>
+          <li>ω<sub>y</sub> crítico = <strong>56.45 rad/s</strong> — plano sagital (“asentir”)</li>
+          <li>ω<sub>z</sub> crítico = <strong>42.87 rad/s</strong> — plano axial (“negar”) ← el eje <strong>menos tolerante</strong></li>
+        </ul>
+        <p>(Son exactamente las constantes que usa este simulador.) Los umbrales se derivaron de modelos de elementos finitos del cerebro — <strong>SIMon</strong> (NHTSA) y <strong>GHBMC</strong> — y de experimentos en animales. <strong>BrIC ≈ 1.0 ≈ 50 %</strong> de riesgo de lesión encefálica grave (AIS ≥ 4).</p>
+        <p>Por qué la rotación deforma tanto: el encéfalo es un sólido casi incompresible dentro de un cráneo rígido; la rotación genera <strong>deformación de corte</strong> que estira los axones (unión sustancia gris–blanca, cuerpo calloso, tronco) y produce la LAD, muchas veces invisible en la TC inicial.</p>
+        <span class="fx">BrIC = √[ (ω_x/66.25)² + (ω_y/56.45)² + (ω_z/42.87)² ]</span>
+      </div></section>
+
+      <section class="acc open"><button class="acc-h" type="button">La escala de referencia <span class="chev">▶</span></button><div class="acc-c">
+        <p>Al pie del modelo 3D, la <strong>“escala de referencia (aproximada)”</strong> ubica los valores actuales de HIC y BrIC frente a algunos hitos, para darle intuición al número:</p>
+        <ul>
+          <li>En <strong>HIC</strong>: ~<strong>700</strong> (choque de auto de gravedad media) y <strong>1000</strong> (lesión grave probable).</li>
+          <li>En <strong>BrIC</strong>: <strong>0.78</strong> (el límite que exigen hoy las normas de cascos) y <strong>1.0</strong> (umbral de lesión axonal difusa).</li>
+        </ul>
+        <p>Además, la frase del <strong>“motociclista”</strong> traduce esos números a una escena cotidiana: el casco que absorbe casi todo el golpe, el derrape oblicuo que hace girar la cabeza, el giro axial sobre el cuello. Son <strong>equivalencias orientativas</strong> — puntos de referencia para interpretar la simulación, no la medición de un caso real.</p>
+      </div></section>
+
+      <section class="acc open"><button class="acc-h" type="button">Certificaciones de cascos en la actualidad <span class="chev">▶</span></button><div class="acc-c">
+        <p>La gran novedad de la última década: las normas dejaron de mirar <strong>solo el impacto lineal</strong> y empezaron a exigir pruebas de <strong>impacto oblicuo/rotacional</strong> — justamente lo que mide el BrIC.</p>
+        <h3>Moto</h3>
+        <ul>
+          <li><strong>ECE 22.06</strong> (Europa, Reglamento ONU N.º 22): agrega prueba de <strong>impacto oblicuo</strong> (yunque a 45°, 8 m/s) con límite de aceleración rotacional y <strong>BrIC ≤ 0.78</strong>. Vigente desde 2020; los ECE 22.05 nuevos se discontinuaron entre 2023–2024 (los ya comprados siguen siendo legales de usar).</li>
+          <li><strong>DOT / FMVSS 218</strong> (EE. UU.): autocertificación del fabricante; impacto lineal, penetración y retención; sin requisito rotacional.</li>
+          <li><strong>Snell M2025</strong> (M2025D / M2025R): estándar vigente de la Snell Foundation (reemplazó al M2020 en 2024–2025); incorporó por primera vez la prueba oblicua con <strong>BrIC ≤ 0.78</strong>.</li>
+          <li><strong>FIM</strong> (competición): homologaciones <strong>FRHPhe‑01</strong> (circuito) y <strong>FRHPhe‑02</strong> (off‑road; recomendada 2025, obligatoria 2026).</li>
+        </ul>
+        <h3>Bici y otros</h3>
+        <ul>
+          <li><strong>CPSC</strong> (EE. UU., obligatoria) y <strong>EN 1078</strong> (Europa, marca CE): pruebas de impacto lineal.</li>
+          <li>Tecnologías anti‑rotación: <strong>MIPS</strong> (capa de bajo rozamiento que permite un leve deslizamiento entre casco y cabeza) y <strong>WaveCel</strong> (estructura celular que colapsa y desliza).</li>
+        </ul>
+        <h3>Calificaciones independientes</h3>
+        <ul>
+          <li><strong>Virginia Tech Helmet Ratings (STAR)</strong>: puntúa el riesgo combinando frecuencia y severidad de impactos e incluye la cinemática rotacional; 1 a 5 estrellas, para muchos deportes.</li>
+          <li><strong>SHARP</strong> (Departamento de Transporte del Reino Unido): califica cascos de moto con ensayos que incluyen impacto oblicuo; 1 a 5 estrellas.</li>
+        </ul>
+      </div></section>
+
+      <section class="acc open"><button class="acc-h" type="button">Por qué simular (valor académico) <span class="chev">▶</span></button><div class="acc-c">
+        <ul>
+          <li><strong>Hace visible lo invisible.</strong> La clínica y la imagen (TC/RM) muestran el <em>daño</em>; la simulación muestra la <em>causa mecánica</em>: fuerzas, presiones y deformaciones durante el impacto.</li>
+          <li><strong>Enseña los dos mecanismos lado a lado:</strong> contusión focal por golpe/contragolpe (lineal) frente a LAD por cizallamiento (rotacional).</li>
+          <li><strong>Muestra los umbrales de tolerancia</strong> y cómo una misma energía produce lesiones distintas según sea lineal o rotacional.</li>
+          <li><strong>Sustituye lo no medible:</strong> la deformación y el estrés dentro de un cerebro vivo no pueden medirse; los modelos son la única forma de estimarlos.</li>
+          <li><strong>Conecta con la prevención:</strong> los mismos modelos sostienen el diseño de cascos y de sistemas de seguridad vehicular.</li>
+          <li><strong>El poder y el límite de un número:</strong> HIC y BrIC resumen el fenómeno en un solo valor — sin ubicación ni tipo de tejido, con umbrales poblacionales —; por eso existen los modelos de elementos finitos, que recuperan el mapa de deformación completo. Entender esa diferencia es, en sí, parte de la enseñanza.</li>
+        </ul>
+      </div></section>
+
+      <section class="acc open"><button class="acc-h" type="button">Potencial a futuro <span class="chev">▶</span></button><div class="acc-c">
+        <ul>
+          <li><strong>Modelos de elementos finitos personalizados</strong> del encéfalo (GHBMC, SIMon, ADAPT, basados en atlas/imagen) que adaptan la geometría a cada individuo.</li>
+          <li><strong>Machine learning</strong> que estima la deformación cerebral en <strong>tiempo real</strong> (de horas de cálculo a milisegundos), llevando el análisis fuera del laboratorio.</li>
+          <li><strong>Acople con neuroimagen:</strong> incorporar la <strong>tractografía (DTI)</strong> a los modelos para mapear la deformación axonal sobre los tractos reales y predecir mejor la LAD.</li>
+          <li><strong>Realidad virtual/aumentada</strong> para enseñar la neuroanatomía y estos mecanismos.</li>
+          <li><strong>Cascos y protección a medida</strong>, optimizados sobre la deformación predicha y no solo sobre el HIC.</li>
+        </ul>
+      </div></section>
+
+      <section class="acc open"><button class="acc-h" type="button">Qué significa para nuestro equipo y nuestros pacientes <span class="chev">▶</span></button><div class="acc-c">
+        <p>Mantenernos al día con la biomecánica del trauma y con esta línea de investigación no es un ejercicio académico aislado: es parte de cómo trabajamos. Comprender los mecanismos — por qué una rotación desencadena una lesión axonal difusa, o dónde va a caer una contusión por contragolpe — afina la lectura de cada caso, la anticipación de los patrones lesionales y las decisiones en la etapa aguda. Ese mismo conocimiento nos permite empujar la prevención: seguir cómo evolucionan las normas de cascos y de protección, y llevar ese mensaje a la comunidad. En un hospital pediátrico, donde una lesión evitada cambia toda una vida, el ida y vuelta entre la investigación, la enseñanza y la cabecera del paciente es lo que nos mantiene a la vanguardia — y lo que, en definitiva, se traduce en mejores resultados para quienes atendemos.</p>
+      </div></section>
+
+      <section class="acc open"><button class="acc-h" type="button">Para profundizar (instituciones) <span class="chev">▶</span></button><div class="acc-c">
+        <ul>
+          <li><strong>NHTSA</strong> — origen del BrIC y del modelo SIMon: <a href="https://www.nhtsa.gov/sites/nhtsa.gov/files/2022-09/Stapp2013%20Takhounts.pdf" target="_blank" rel="noopener noreferrer">documento primario (Takhounts y col.)</a></li>
+          <li><strong>Virginia Tech Helmet Lab</strong> — calificaciones STAR y metodología: <a href="https://www.helmet.beam.vt.edu/" target="_blank" rel="noopener noreferrer">helmet.beam.vt.edu</a></li>
+          <li><strong>Snell Memorial Foundation</strong> — norma M2025: <a href="https://smf.org/" target="_blank" rel="noopener noreferrer">smf.org</a></li>
+          <li><strong>SHARP (UK DfT)</strong> — ECE 22.06 y calificación de cascos de moto: <a href="https://sharp.dft.gov.uk/" target="_blank" rel="noopener noreferrer">sharp.dft.gov.uk</a></li>
+          <li><strong>FIM Racing Homologation</strong> — cascos de competición: <a href="https://www.frhp.org/" target="_blank" rel="noopener noreferrer">frhp.org</a></li>
+          <li><strong>GHBMC</strong> — modelos de cuerpo y cabeza por elementos finitos: <a href="https://www.ghbmc.com/" target="_blank" rel="noopener noreferrer">ghbmc.com</a></li>
+          <li><strong>CDC HEADS UP</strong> — educación sobre conmoción y TEC: <a href="https://www.cdc.gov/heads-up/index.html" target="_blank" rel="noopener noreferrer">cdc.gov/heads-up</a></li>
+        </ul>
+      </div></section>
+
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var ov=document.getElementById("guiaOverlay");
+  var openBtn=document.getElementById("guiaBtn");
+  var closeBtn=document.getElementById("guiaClose");
+  if(!ov||!openBtn) return;
+  function openG(){ ov.classList.add("open"); ov.setAttribute("aria-hidden","false"); document.body.style.overflow="hidden"; ov.scrollTop=0; }
+  function closeG(){ ov.classList.remove("open"); ov.setAttribute("aria-hidden","true"); document.body.style.overflow=""; }
+  openBtn.addEventListener("click", openG);
+  closeBtn.addEventListener("click", closeG);
+  ov.addEventListener("click", function(e){ if(e.target===ov) closeG(); });
+  document.addEventListener("keydown", function(e){ if((e.key==="Escape"||e.key==="Esc") && ov.classList.contains("open")) closeG(); });
+  var hs=ov.querySelectorAll(".acc-h");
+  for(var i=0;i<hs.length;i++){ hs[i].addEventListener("click", function(){ this.parentNode.classList.toggle("open"); }); }
+})();
+</script>
 <script>
 /**
  * @license
